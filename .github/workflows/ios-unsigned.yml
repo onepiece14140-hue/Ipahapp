@@ -41,9 +41,11 @@ jobs:
           test -d "$APP_PATH"
           mkdir -p "$OUTPUT_DIR" "$STAGING_DIR/Payload"
           cp -R "$APP_PATH" "$STAGING_DIR/Payload/Runner.app"
-          ditto -c -k --sequesterRsrc "$STAGING_DIR/Payload" "$OUTPUT_DIR/ProxyUtilityStarter-unsigned.ipa"
-          test -s "$OUTPUT_DIR/ProxyUtilityStarter-unsigned.ipa"
-          unzip -l "$OUTPUT_DIR/ProxyUtilityStarter-unsigned.ipa" | head -20
+          IPA_PATH="$OUTPUT_DIR/ProxyUtilityStarter-unsigned.ipa"
+          ditto -c -k --keepParent --sequesterRsrc "$STAGING_DIR/Payload" "$IPA_PATH"
+          test -s "$IPA_PATH"
+          unzip -t "$IPA_PATH"
+          unzip -Z1 "$IPA_PATH" | grep -qx 'Payload/Runner.app/Info.plist'
 
       - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
