@@ -23,7 +23,10 @@ jobs:
           cache: true
 
       - name: Generate iOS runner project when absent
-        run: flutter create --platforms=ios --org com.example --project-name proxyutility .
+        shell: bash
+        run: |
+          flutter create --platforms=ios --org com.example --project-name netflixhapp .
+          /usr/libexec/PlistBuddy -c 'Set :CFBundleDisplayName NetflixHapp' ios/Runner/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c 'Add :CFBundleDisplayName string NetflixHapp' ios/Runner/Info.plist
 
       - name: Resolve packages
         run: flutter pub get
@@ -41,7 +44,7 @@ jobs:
           test -d "$APP_PATH"
           mkdir -p "$OUTPUT_DIR" "$STAGING_DIR/Payload"
           cp -R "$APP_PATH" "$STAGING_DIR/Payload/Runner.app"
-          IPA_PATH="$OUTPUT_DIR/ProxyUtilityStarter-unsigned.ipa"
+          IPA_PATH="$OUTPUT_DIR/NetflixHapp-unsigned.ipa"
           ditto -c -k --keepParent --sequesterRsrc "$STAGING_DIR/Payload" "$IPA_PATH"
           test -s "$IPA_PATH"
           unzip -t "$IPA_PATH"
@@ -50,7 +53,7 @@ jobs:
       - name: Upload unsigned IPA artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ProxyUtilityStarter-unsigned-ipa
-          path: build/ios/ipa/ProxyUtilityStarter-unsigned.ipa
+          name: NetflixHapp-unsigned-ipa
+          path: build/ios/ipa/NetflixHapp-unsigned.ipa
           if-no-files-found: error
           retention-days: 14

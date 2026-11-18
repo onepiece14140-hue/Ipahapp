@@ -1,42 +1,43 @@
-# Proxy Utility Starter (Flutter)
+# NetflixHapp (Flutter)
 
-โปรเจกต์ Flutter เริ่มต้นสำหรับต่อยอดแอปข้ามแพลตฟอร์ม Android/iOS โดยออกแบบหน้าจอใหม่จากการตรวจโครงสร้าง Android แบบ static ใน `Netflix_source.zip` เท่านั้น **ไม่ได้แปลงหรือคัดลอก Smali, binary, รูป/วิดีโอ, credentials หรือโค้ด proprietary**
+แอป Flutter รุ่นแรกที่ยึด flow จาก `NetflixHappIOS_Source.zip` และใช้ Android archive ที่ให้มาเป็นข้อมูลอ้างอิงแบบ static หน้าเว็บหลักเปิด `https://www.netflix.com/th/` ใน WebView
 
-## มีอะไรใน starter
+## Flow ของแอป
 
-- Dashboard พร้อมปุ่ม Connect/Disconnect ที่เป็นเพียง demo state
-- รายการโปรไฟล์จำลอง และฟอร์มเพิ่มโปรไฟล์ในหน่วยความจำ
-- หน้า Statistics ที่แสดง placeholder ไม่ได้อ่านปริมาณ traffic จริง
-- Settings พร้อมสวิตช์ตัวอย่างและทางลัดไปหน้าสถิติ/ข้อความ log ตัวอย่าง
-- โครงสร้างเป็น Flutter/Dart ใช้ Material 3 และไม่มี plugin ภายนอก
+1. ตรวจสถานะ License กับ API ที่กำหนดไว้ใน source (`/status`) หากไม่มีคีย์จะเปิดหน้าใส่ License
+2. เมื่อ License active จะเล่น `assets/LoadingVideo.mp4`
+3. จากนั้นเปิด Netflix Thailand ใน WebView
+4. WebView ตรวจ trigger `เปิดhapp` และข้อความ `Happy` ในช่องอีเมลตอน submit เพื่อเปิดหน้า HAPP
+5. หน้า HAPP ใน IPA รุ่นแรกมีลิงก์ไปยังแอป Happ ทางการบน App Store
 
-## ยังไม่ได้ทำ
+License key และ installation ID เก็บด้วย secure storage ของระบบ (Keychain บน iOS/Keystore บน Android) เมื่อเปิดแอปหรือกดตรวจคีย์ แอปจะส่ง `key`, `installationId` และ `appVersion` ไปยัง `https://keyadmin-4byc6bqo.manus.space/api/license/` ตาม logic ใน source ที่ส่งมา
 
-ไม่มี VPN tunnel, XRay/proxy engine, routing, subscription fetch/update, QR/deep link import, real ping, network statistics, background services, Firebase, Android Quick Settings tile หรือ iOS Network Extension ระบบปุ่มเชื่อมต่อเป็น UI จำลองเท่านั้น ข้อมูล endpoint ที่เพิ่มจะไม่ถูกส่งไปที่ใดและหายเมื่อปิดแอป
+## ข้อจำกัดของรุ่นแรก
 
-ฟีเจอร์เครือข่ายจริงต้องออกแบบและพัฒนาใหม่โดยใช้ library/API ที่ได้รับอนุญาต พร้อมตรวจใบอนุญาต, ความปลอดภัยของ config/credentials และข้อกำหนดของแต่ละแพลตฟอร์ม สำหรับ VPN บน iOS ต้องมี Network Extension entitlement และการตั้งค่า/การลงนามที่เหมาะสม ส่วน Android ต้องใช้ Android VpnService และ permission flow ที่ถูกต้อง
+IPA นี้ **ยังไม่มี HAPP/Xray engine หรือ iOS Network Extension จึงยังสร้าง system-wide VPN/proxy tunnel และยังไม่เทียบเท่าฟังก์ชัน HAPP บน Android** หน้า HAPP จะพาไปใช้แอป Happ ทางการแยกต่างหากเท่านั้น การเพิ่ม tunnel ในแอปนี้ต้องพัฒนา iOS Packet Tunnel/Network Extension และใช้ entitlement กับ provisioning ที่รองรับ
 
-## โครงสร้าง
+ไฟล์ `Netflix_source.zip` เป็น APK ที่ถอดโครงสร้างด้วย Apktool ไม่ใช่ Android Gradle source project และ source iOS ที่ให้มามี `HAPPView` เป็น placeholder จึงไม่ได้คัดลอก binary/native engine จาก APK มาใช้ใน iOS
 
-```text
-lib/main.dart       แอปตัวอย่างและหน้าจอทั้งหมด
-pubspec.yaml        Flutter package configuration
-```
+การเล่นวิดีโอ Netflix ใน WebView อาจถูกจำกัดโดย Netflix หรือความสามารถของ WKWebView บนอุปกรณ์
 
-## สร้าง unsigned IPA บน GitHub
+## Third-party packages
 
-เปิด **Actions → Build unsigned iOS IPA → Run workflow**. Workflow ใช้ macOS GitHub-hosted runner สร้าง iOS Runner project, compile ด้วย `flutter build ios --release --no-codesign`, แพ็กเป็น `ProxyUtilityStarter-unsigned.ipa` และอัปโหลด artifact ชื่อ `ProxyUtilityStarter-unsigned-ipa` ไว้ 14 วัน. ขั้น compile จะตรวจความถูกต้องของ Dart/iOS build โดยตรง.
+- [`webview_flutter` ^4.14.1](https://pub.dev/packages/webview_flutter) — BSD-3-Clause
+- [`video_player` ^2.14.1](https://pub.dev/packages/video_player) — BSD-3-Clause
+- [`flutter_secure_storage` ^11.2.0](https://pub.dev/packages/flutter_secure_storage) — BSD-3-Clause
+- [`url_launcher` ^6.3.3](https://pub.dev/packages/url_launcher) — BSD-3-Clause
 
-ไฟล์ IPA นี้ยังไม่เซ็น จึงติดตั้งบน iPhone โดยตรงไม่ได้ ต้องนำไปเซ็นด้วย certificate/profile ที่ถูกต้องหรือวิธีที่ GBox และ iOS เวอร์ชันของอุปกรณ์รองรับก่อน GBox ช่วยเซ็น/ติดตั้ง IPA ที่มีอยู่ ไม่ได้ build Flutter project จาก source. การมีหรือใช้ certificate ขึ้นกับผู้ให้บริการ signing และข้อกำหนดของ Apple.
+## Build unsigned IPA บน GitHub
 
-## วิธีรัน/build ในเครื่อง
+เปิด **Actions → Build unsigned iOS IPA → Run workflow**. Workflow ใช้ GitHub-hosted macOS runner สร้าง iOS runner, resolve dependencies, build แบบ `--no-codesign`, แพ็ก `Payload/Runner.app` เป็น `NetflixHapp-unsigned.ipa` และเก็บ artifact 14 วัน
 
-ติดตั้ง Flutter SDK; สำหรับ iOS ต้องใช้ macOS และ Xcode. จาก root ของ repository:
+IPA นี้ยังไม่เซ็น ต้องนำไปเซ็นด้วยวิธีที่รองรับก่อนติดตั้งบน iPhone ได้ การเซ็นอย่างเดียวไม่ได้เพิ่มความสามารถ Network Extension ให้แอป
+
+## Build ในเครื่อง
 
 ```bash
-flutter create --platforms=ios --org com.example --project-name proxyutility .
+flutter create --platforms=ios,android --org com.example --project-name netflixhapp .
 flutter pub get
 flutter build ios --release --no-codesign
+flutter build apk --release
 ```
-
-สร้าง Android APK ได้ด้วย `flutter build apk --release`. IPA ที่เซ็นเพื่อแจกจ่ายต้องตั้งค่า Apple code-signing และ provisioning; workflow นี้ไม่ขอหรือเก็บ signing credentials.
