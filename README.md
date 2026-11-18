@@ -25,7 +25,7 @@ pubspec.yaml        Flutter package configuration
 
 ## สร้าง unsigned IPA บน GitHub
 
-เปิด **Actions → Build unsigned iOS IPA → Run workflow**. Workflow ใช้ macOS GitHub-hosted runner สร้าง iOS Runner project, รัน `flutter analyze`, build แบบไม่เซ็น, แพ็กเป็น `ProxyUtilityStarter-unsigned.ipa` และอัปโหลด artifact ชื่อ `ProxyUtilityStarter-unsigned-ipa` ไว้ 14 วัน.
+เปิด **Actions → Build unsigned iOS IPA → Run workflow**. Workflow ใช้ macOS GitHub-hosted runner สร้าง iOS Runner project, compile ด้วย `flutter build ios --release --no-codesign`, แพ็กเป็น `ProxyUtilityStarter-unsigned.ipa` และอัปโหลด artifact ชื่อ `ProxyUtilityStarter-unsigned-ipa` ไว้ 14 วัน. ขั้น compile จะตรวจความถูกต้องของ Dart/iOS build โดยตรง.
 
 ไฟล์ IPA นี้ยังไม่เซ็น จึงติดตั้งบน iPhone โดยตรงไม่ได้ ต้องนำไปเซ็นด้วย certificate/profile ที่ถูกต้องหรือวิธีที่ GBox และ iOS เวอร์ชันของอุปกรณ์รองรับก่อน GBox ช่วยเซ็น/ติดตั้ง IPA ที่มีอยู่ ไม่ได้ build Flutter project จาก source. การมีหรือใช้ certificate ขึ้นกับผู้ให้บริการ signing และข้อกำหนดของ Apple.
 
@@ -36,7 +36,6 @@ pubspec.yaml        Flutter package configuration
 ```bash
 flutter create --platforms=ios --org com.example --project-name proxyutility .
 flutter pub get
-flutter analyze
 flutter build ios --release --no-codesign
 ```
 

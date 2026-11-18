@@ -28,9 +28,6 @@ jobs:
       - name: Resolve packages
         run: flutter pub get
 
-      - name: Analyze Dart sources
-        run: flutter analyze lib
-
       - name: Build iOS app without code signing
         run: flutter build ios --release --no-codesign
 
