@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LicensePage extends StatefulWidget {
-  const LicensePage({
+class AppLicensePage extends StatefulWidget {
+  const AppLicensePage({
     required this.onSubmit,
     required this.isSubmitting,
     required this.hasOfflineSavedKey,
@@ -15,10 +15,10 @@ class LicensePage extends StatefulWidget {
   final String? message;
 
   @override
-  State<LicensePage> createState() => _LicensePageState();
+  State<AppLicensePage> createState() => _AppLicensePageState();
 }
 
-class _LicensePageState extends State<LicensePage> {
+class _AppLicensePageState extends State<AppLicensePage> {
   final TextEditingController _keyController = TextEditingController();
 
   @override

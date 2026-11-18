@@ -131,7 +131,7 @@ class _AppFlowState extends State<_AppFlow> {
   Widget build(BuildContext context) {
     return switch (_stage) {
       _AppStage.checkingLicense => const _CheckingLicensePage(),
-      _AppStage.license => LicensePage(
+      _AppStage.license => AppLicensePage(
           message: _licenseMessage,
           hasOfflineSavedKey: _offlineSavedKey,
           isSubmitting: _submitting,
