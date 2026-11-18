@@ -47,6 +47,25 @@ jobs:
             echo "Flutter reported a signing-profile validation error; verifying the unsigned app bundle produced by Xcode."
           fi
 
+          if [ ! -d "$APP_PATH" ]; then
+            DERIVED_DATA="$RUNNER_TEMP/netflixhapp-derived"
+            DIRECT_APP="$DERIVED_DATA/Build/Products/Release-iphoneos/Runner.app"
+            xcodebuild \
+              -workspace ios/Runner.xcworkspace \
+              -scheme Runner \
+              -configuration Release \
+              -sdk iphoneos \
+              -destination 'generic/platform=iOS' \
+              -derivedDataPath "$DERIVED_DATA" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY='' \
+              build
+            test -d "$DIRECT_APP"
+            mkdir -p "$(dirname "$APP_PATH")"
+            cp -R "$DIRECT_APP" "$APP_PATH"
+          fi
+
           test -d "$APP_PATH"
           test -s "$APP_PATH/Runner"
           /usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Info.plist"
