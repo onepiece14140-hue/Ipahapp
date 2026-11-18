@@ -32,7 +32,25 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS app without code signing
-        run: flutter build ios --release --no-codesign
+        shell: bash
+        run: |
+          set +e
+          flutter build ios --release --no-codesign 2>&1 | tee "$RUNNER_TEMP/flutter-ios-build.log"
+          build_status=${PIPESTATUS[0]}
+          set -e
+
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          if [ "$build_status" -ne 0 ]; then
+            if ! grep -Fq 'Building a deployable iOS app requires a selected Development Team' "$RUNNER_TEMP/flutter-ios-build.log"; then
+              exit "$build_status"
+            fi
+            echo "Flutter reported a signing-profile validation error; verifying the unsigned app bundle produced by Xcode."
+          fi
+
+          test -d "$APP_PATH"
+          test -s "$APP_PATH/Runner"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$APP_PATH/Info.plist"
 
       - name: Package unsigned IPA for re-signing
         shell: bash
